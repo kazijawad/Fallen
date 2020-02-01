@@ -5,6 +5,9 @@
 *.code-workspace
 .vscode/
 
+# macOS
+.DS_STORE
+
 # Compiled Object files
 *.slo
 *.lo
