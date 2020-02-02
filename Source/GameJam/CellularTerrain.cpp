@@ -77,7 +77,7 @@ ACellularTerrain::ACellularTerrain()
 	int32 seed = (int32)(FDateTime::Now().GetTicks() % INT_MAX);
 	FMath::RandInit(seed);
 
-	GridSize = 100;
+	GridSize = 50;
 	BirthLimit = 4;
 	DeathLimit = 3;
 	SpawnAliveRate = 0.4f;
@@ -140,6 +140,22 @@ ACellularTerrain::ACellularTerrain()
 		for(int32 jj = -5; jj < 5; jj++)
 			TileGrid[GetIndex(ii + GridSize/2, jj + GridSize/2)] = 0;
 
+	// Clearing Out All Inside Rocks (Only Border)
+	TArray<int32> FinalTileGrid;
+	FinalTileGrid.Init(0, GridSize * GridSize);
+
+	for(int32 xx = 0; xx < GridSize; xx++)
+		for(int32 yy = 0; yy < GridSize; yy++)
+		{
+			if(CountAliveNeighbors(xx, yy) == 8)
+				FinalTileGrid[GetIndex(xx, yy)] = 1;
+		}
+
+	for(int32 k = 0; k < GridSize * GridSize; k++)
+		if(TileGrid[k] == 1 && FinalTileGrid == 1)
+			TileGrid[k] = FinalTileGrid[k];
+
+	
 	// Putting objecs in the level
 
 	//UInstancedStaticMeshComponent *pFloor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Floor"));
@@ -177,61 +193,3 @@ void ACellularTerrain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-#if WITH_EDITOR
-void ACellularTerrain::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
-{
-	// Generating initial random grid to grow on
-	for (int32 i = 0; i < GridSize; i++)
-	{
-		for (int32 j = 0; j < GridSize; j++)
-		{
-			if (FMath::FRandRange(0, 1) < SpawnAliveRate)
-				TileGrid[GetIndex(i, j)] = 1;
-
-			else
-				TileGrid[GetIndex(i, j)] = 0;
-		}
-	}
-
-	// Growing the caves using cellular automata
-	for (int32 i = 0; i < TotalSteps; i++)
-	{
-		// Don't want to overwrite grid as we're calculating
-		TArray<int32> NewTileGrid;
-		NewTileGrid.Init(0, GridSize * GridSize);
-
-		for (int32 x = 0; x < GridSize; x++)
-		{
-			for (int32 y = 0; y < GridSize; y++)
-			{
-				int32 neighbors = CountAliveNeighbors(x, y);
-
-				// If cell is alive but too lonely, it dies
-				if (TileGrid[GetIndex(x, y)] == 1)
-				{
-					if (neighbors < DeathLimit)
-						NewTileGrid[GetIndex(x, y)] = 0;
-
-					else
-						NewTileGrid[GetIndex(x, y)] = 1;
-				}
-				// If cell is dead but has friends, it lives
-				else if (TileGrid[GetIndex(x, y)] == 0)
-				{
-					if (neighbors > BirthLimit)
-						NewTileGrid[GetIndex(x, y)] = 1;
-
-					else
-						NewTileGrid[GetIndex(x, y)] = 0;
-				}
-			}
-		}
-
-		for (int32 k = 0; k < GridSize * GridSize; k++)
-			TileGrid[k] = NewTileGrid[k];
-	}
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-}
-#endif
