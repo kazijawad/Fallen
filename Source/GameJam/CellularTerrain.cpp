@@ -141,12 +141,13 @@ ACellularTerrain::ACellularTerrain()
 			TileGrid[GetIndex(ii + GridSize/2, jj + GridSize/2)] = 0;
 
 	// Time to add feathers to the map
-	FeatherLocations.Init(0, GridSize * GridSize);
+	UE_LOG(LogTemp, Warning, TEXT("Size: &d"), FeatherLocations.Num());
 	while(FeatherLocations.Num() < 10)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("inside loop"));
 		int32 random = FMath::RandRange(0, GridSize * GridSize - 1);
-		if(TileGrid[random] == 1)
-			FeatherLocations.Append(random);
+		if(TileGrid[random] == 0)
+			FeatherLocations.AddUnique(random);
 	}
 
 	// Clearing Out All Inside Rocks (Only Border)

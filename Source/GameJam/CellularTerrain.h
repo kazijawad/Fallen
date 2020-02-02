@@ -47,7 +47,11 @@ public:
 	int32 TotalSteps;
 
 	int32 CountAliveNeighbors(int32 x, int32 y);
+
+	UFUNCTION(BlueprintCallable)
 	int32 GetY(int32 x);
+
+	UFUNCTION(BlueprintCallable)
 	int32 GetX(int32 x);
 
 	UFUNCTION(BlueprintCallable)
