@@ -68,22 +68,9 @@ int32 ACellularTerrain::CountAliveNeighbors(int32 x, int32 y)
 	return count;
 }
 
-// Sets default values
-ACellularTerrain::ACellularTerrain()
+// Fills TileGrid and FeatherLocations
+void ACellularTerrain::generate()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	int32 seed = (int32)(FDateTime::Now().GetTicks() % INT_MAX);
-	FMath::RandInit(seed);
-
-	GridSize = 50;
-	BirthLimit = 4;
-	DeathLimit = 4;
-	SpawnAliveRate = 0.45f;
-	TotalSteps = 8;
-	TileGrid.Init(0, GridSize * GridSize);
-
 	// Generating initial random grid to grow on
 	for (int32 i = 0; i < GridSize; i++)
 	{
@@ -136,17 +123,18 @@ ACellularTerrain::ACellularTerrain()
 	}
 
 	// Clear Out a space in the center
-	for(int32 ii = -5; ii < 5; ii++)
-		for(int32 jj = -5; jj < 5; jj++)
-			TileGrid[GetIndex(ii + GridSize/2, jj + GridSize/2)] = 0;
+	for (int32 ii = -5; ii < 5; ii++)
+		for (int32 jj = -5; jj < 5; jj++)
+			TileGrid[GetIndex(ii + GridSize / 2, jj + GridSize / 2)] = 0;
 
 	// Time to add feathers to the map
-	UE_LOG(LogTemp, Warning, TEXT("Size: &d"), FeatherLocations.Num());
-	while(FeatherLocations.Num() < 10)
+	// UE_LOG(LogTemp, Warning, TEXT("Size: &d"), FeatherLocations.Num());
+	FeatherLocations.Empty();
+	while (FeatherLocations.Num() < 10)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("inside loop"));
+		// UE_LOG(LogTemp, Warning, TEXT("inside loop"));
 		int32 random = FMath::RandRange(0, GridSize * GridSize - 1);
-		if(TileGrid[random] == 0)
+		if (TileGrid[random] == 0)
 			FeatherLocations.AddUnique(random);
 	}
 
@@ -154,48 +142,46 @@ ACellularTerrain::ACellularTerrain()
 	TArray<int32> FinalTileGrid;
 	FinalTileGrid.Init(0, GridSize * GridSize);
 
-	for(int32 xx = 0; xx < GridSize; xx++)
-		for(int32 yy = 0; yy < GridSize; yy++)
+	for (int32 xx = 0; xx < GridSize; xx++)
+		for (int32 yy = 0; yy < GridSize; yy++)
 		{
-			if(CountAliveNeighbors(xx, yy) == 8)
+			if (CountAliveNeighbors(xx, yy) == 8)
 				FinalTileGrid[GetIndex(xx, yy)] = 1;
 		}
 
-	for(int32 k = 0; k < GridSize * GridSize; k++)
-		if(TileGrid[k] == 1 && FinalTileGrid[k] == 1)
+	for (int32 k = 0; k < GridSize * GridSize; k++)
+		if (TileGrid[k] == 1 && FinalTileGrid[k] == 1)
 			TileGrid[k] = FinalTileGrid[k];
+}
 
-	
-	// Putting objecs in the level
+// Sets default values
+ACellularTerrain::ACellularTerrain()
+{
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
 
-	//UInstancedStaticMeshComponent *pFloor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Floor"));
-	// pFloor->RegisterComponent();
-	// pFloor->SetStaticMesh(FloorMesh);
-	// pFloor->SetFlags(RF_Transactional);
-	// this->AddInstanceComponent(pFloor);
+	int32 seed = (int32)(FDateTime::Now().GetTicks() % INT_MAX);
+	FMath::RandInit(seed);
 
-	//UInstancedStaticMeshComponent *pCube = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Wall"));
-	// pCube->RegisterComponent();
-	// pCube->SetStaticMesh(CubeMesh);
-	// pCube->SetFlags(RF_Transactional);
-	// this->AddInstanceComponent(pCube);
+	GridSize = 50;
+	BirthLimit = 4;
+	DeathLimit = 4;
+	SpawnAliveRate = 0.45f;
+	TotalSteps = 8;
+	TileGrid.Init(0, GridSize * GridSize);
 
-	/*
-    for(int32 p = 0; p < GridSize; p++)
-        for(int32 q = 0; q < GridSize; q++)
-        {
-            FTransform t(FVector(p * 100, q * 100, 0));
-            if(TileGrid[GetIndex(p, q)] == 1)
-                pCube->AddInstance(t);
-            else if(TileGrid[GetIndex(p,q)] == 0)
-                pFloor->AddInstance(t);
-        }*/
+	generate();
 }
 
 // Called when the game starts or when spawned
 void ACellularTerrain::BeginPlay()
 {
 	Super::BeginPlay();
+
+	int32 seed = (int32)(FDateTime::Now().GetTicks() % INT_MAX);
+	FMath::RandInit(seed);
+
+	generate();
 }
 
 // Called every frame
@@ -203,3 +189,12 @@ void ACellularTerrain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+#if WITH_EDITOR
+void ACellularTerrain::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
+{
+	generate();
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+#endif
