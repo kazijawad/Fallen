@@ -32,6 +32,9 @@ public:
 	TArray<int32> TileGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cave Gen")
+	TArray<int32> FeatherLocations;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cave Gen")
 	int32 BirthLimit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cave Gen")

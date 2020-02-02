@@ -140,6 +140,15 @@ ACellularTerrain::ACellularTerrain()
 		for(int32 jj = -5; jj < 5; jj++)
 			TileGrid[GetIndex(ii + GridSize/2, jj + GridSize/2)] = 0;
 
+	// Time to add feathers to the map
+	FeatherLocations.Init(0, GridSize * GridSize);
+	while(FeatherLocations.Num() < 10)
+	{
+		int32 random = FMath::RandRange(0, GridSize * GridSize - 1);
+		if(TileGrid[random] == 1)
+			FeatherLocations.Append(random);
+	}
+
 	// Clearing Out All Inside Rocks (Only Border)
 	TArray<int32> FinalTileGrid;
 	FinalTileGrid.Init(0, GridSize * GridSize);
