@@ -166,7 +166,7 @@ ACellularTerrain::ACellularTerrain()
 	GridSize = 50;
 	BirthLimit = 4;
 	DeathLimit = 4;
-	SpawnAliveRate = 0.45f;
+	SpawnAliveRate = 0.47f;
 	TotalSteps = 8;
 	TileGrid.Init(0, GridSize * GridSize);
 
