@@ -152,7 +152,7 @@ ACellularTerrain::ACellularTerrain()
 		}
 
 	for(int32 k = 0; k < GridSize * GridSize; k++)
-		if(TileGrid[k] == 1 && FinalTileGrid == 1)
+		if(TileGrid[k] == 1 && FinalTileGrid[k] == 1)
 			TileGrid[k] = FinalTileGrid[k];
 
 	
