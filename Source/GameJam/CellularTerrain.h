@@ -50,7 +50,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetIndex(int32 x, int32 y);
 
-	void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent);
+	//void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent);
 
 protected:
 	// Called when the game starts or when spawned
