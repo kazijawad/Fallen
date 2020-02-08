@@ -16,12 +16,6 @@ public:
 	// Sets default values for this actor's properties
 	ACellularTerrain();
 
-	// UPROPERTY(EditAnywhere)
-	// UStaticMesh *CubeMesh;
-
-	// UPROPERTY(EditAnywhere)
-	// UStaticMesh *FloorMesh;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -56,8 +50,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int32 GetIndex(int32 x, int32 y);
-
-	//void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent);
 
 protected:
 	// Called when the game starts or when spawned
