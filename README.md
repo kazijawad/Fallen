@@ -45,7 +45,4 @@ Generate Visual Studio Code project files
 
 ## Authors
 
-Kazi Jawad
-Michael Kim
-Richard Zhou
-Ian Lippincott
+Kazi Jawad, Michael Kim, Richard Zhou, Ian Lippincott
